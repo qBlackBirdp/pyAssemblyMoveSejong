@@ -2,6 +2,7 @@
 
 import os
 import requests
+from datetime import datetime
 
 
 # 부동산 데이터 요청 함수
@@ -84,3 +85,26 @@ def get_real_estate_data_housing(region):
     data = fetch_real_estate_data(region_code, start_year, end_year, statbl_id)
 
     return data
+
+
+# 날짜별 데이터 분리 함수
+def split_data_by_date(data):
+    before_sep = []  # 2020년 9월 이전 데이터
+    after_sep = []   # 2020년 10월 이후 데이터
+
+    for record in data.get('row', []):
+        # "2017년 1월"과 같은 형식의 날짜 문자열을 "2017-01-01" 형식으로 변환
+        date_str = record.get("WRTTIME_DESC")
+        try:
+            # "yyyy년 mm월" 형태에서 "yyyy-mm-01"로 변환
+            date_obj = datetime.strptime(date_str + " 1일", "%Y년 %m월 %d일")
+        except ValueError:
+            continue  # 날짜 형식이 맞지 않으면 skip
+
+        # 2020년 9월 이전 데이터와 이후 데이터로 분리
+        if date_obj < datetime(2020, 10, 1):  # 2020년 9월 이전
+            before_sep.append(record)
+        else:  # 2020년 10월 이후
+            after_sep.append(record)
+
+    return before_sep, after_sep
