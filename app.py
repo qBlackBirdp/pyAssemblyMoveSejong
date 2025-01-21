@@ -13,8 +13,10 @@ print(f"API Key: {api_key}")
 app = Flask(__name__)
 
 # 라우트 등록
-from routes.real_estate import real_estate_bp
-app.register_blueprint(real_estate_bp, url_prefix="/api")
+from routes.real_estate import real_estate_bp, visualization_bp
+
+app.register_blueprint(real_estate_bp, url_prefix="/api/real-estate")
+app.register_blueprint(visualization_bp, url_prefix='/api/visualization')
 
 # 서버 실행
 if __name__ == '__main__':
